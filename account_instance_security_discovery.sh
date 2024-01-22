@@ -40,7 +40,7 @@ echo "-----------------------------------------------------------"
 for role in $(aws iam list-roles --region $1 | jq -r '.Roles[].RoleName')
 do 
     echo $role; 
-    aws iam list-role-policies --role-name $role --region $1 | jq
+    aws iam list-role-policies --role-name $role --region $1 | jq '.' | head
     echo "-------------"
     echo $'\n'
 done
@@ -58,7 +58,7 @@ while read -r role; do
     role_arn=$(echo "$role" | cut -f2)
     
     # Get list of attached policies for each role
-    attached_policies=$(aws iam list-attached-role-policies --role-name $role_name --region $AWS_REGION --query "AttachedPolicies[*].PolicyName" --output text)
+    attached_policies=$(aws iam list-attached-role-policies --role-name $role_name --region $1 --query "AttachedPolicies[*].PolicyName" --output text)
     
     echo "$role_name,$role_arn,\"$attached_policies\"" | tr '\t' ','
 done <<< "$roles"
